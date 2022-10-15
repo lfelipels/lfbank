@@ -1,17 +1,22 @@
 package br.com.lfbank.domains.account.entities;
 
+import br.com.lfbank.domains.account.enums.AccountLimit;
 import br.com.lfbank.domains.account.enums.AccountStatus;
 import br.com.lfbank.domains.account.exceptions.OverDrawException;
 import br.com.lfbank.domains.client.entities.Client;
 import br.com.lfbank.domains.institutional.entities.Agency;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract  class Account implements AccountInterface{
+
+    protected Map<AccountLimit, Integer> limits;
 
     private Integer number;
     private Client client;
     private Agency agency;
     private Double balance;
-
     private AccountStatus status;
 
     protected Account(
@@ -24,6 +29,7 @@ public abstract  class Account implements AccountInterface{
         this.agency = agency;
         this.balance = 0d;
         this.status = AccountStatus.INACTIVE;
+        this.limits = new HashMap<>();
     }
 
     @Override
@@ -47,6 +53,10 @@ public abstract  class Account implements AccountInterface{
             throw new OverDrawException();
         }
         this.balance -= amount;
+    }
+
+    public void addLimit(AccountLimit limitType, Integer limit){
+        this.limits.put(limitType, limit);
     }
 
     @Override
@@ -76,5 +86,10 @@ public abstract  class Account implements AccountInterface{
     @Override
     public Double getBalance() {
         return balance;
+    }
+
+    @Override
+    public Map<AccountLimit, Integer> getLimits() {
+        return this.limits;
     }
 }
