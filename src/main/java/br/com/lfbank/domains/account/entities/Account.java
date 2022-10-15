@@ -1,6 +1,7 @@
 package br.com.lfbank.domains.account.entities;
 
 import br.com.lfbank.domains.account.enums.AccountStatus;
+import br.com.lfbank.domains.account.exceptions.OverDrawException;
 import br.com.lfbank.domains.client.entities.Client;
 import br.com.lfbank.domains.institutional.entities.Agency;
 
@@ -35,6 +36,17 @@ public abstract  class Account implements AccountInterface{
         if(!this.isActive()){
             this.active();
         }
+    }
+
+    @Override
+    public void withDraw(double amount) throws OverDrawException {
+        if(amount <= 0){
+            throw new IllegalArgumentException("The value should be a positive value");
+        }
+        if(amount > this.balance){
+            throw new OverDrawException();
+        }
+        this.balance -= amount;
     }
 
     @Override

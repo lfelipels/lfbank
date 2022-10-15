@@ -2,6 +2,7 @@ package br.com.lfbank.test.domains.account.entities;
 
 import br.com.lfbank.domains.account.entities.AccountInterface;
 import br.com.lfbank.domains.account.entities.SavingsAccount;
+import br.com.lfbank.domains.account.exceptions.OverDrawException;
 import br.com.lfbank.domains.institutional.entities.Agency;
 import br.com.lfbank.domains.client.entities.Client;
 import org.junit.jupiter.api.Assertions;
@@ -70,9 +71,7 @@ public class AccountTest {
                 agency
         );
 
-        Assertions.assertThrows(IllegalArgumentException.class, () ->{
-            account.deposit(-100d);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> account.deposit(-100d));
 
         Assertions.assertEquals(0d, account.getBalance());
     }
@@ -91,5 +90,53 @@ public class AccountTest {
         account.deposit(100d);
         Assertions.assertEquals(100d, account.getBalance());
         Assertions.assertTrue(account.isActive());
+    }
+
+
+    @Test
+    public void testWithDrawInAnAccount(){
+        Agency agency = new Agency();
+        Client client = new Client();
+
+        AccountInterface account = new SavingsAccount(
+                1,
+                client,
+                agency
+        );
+        account.deposit(100d);
+        Assertions.assertDoesNotThrow(() -> {
+            account.withDraw(50d);
+        });
+        Assertions.assertEquals(50d, account.getBalance());
+    }
+
+    @Test
+    public void testWithDrawInAnAccountWithNegativeValueShouldThrowException(){
+        Agency agency = new Agency();
+        Client client = new Client();
+
+        AccountInterface account = new SavingsAccount(
+                1,
+                client,
+                agency
+        );
+        account.deposit(100d);
+        Assertions.assertThrows(IllegalArgumentException.class, ()-> account.withDraw(-50d));
+        Assertions.assertEquals(100d, account.getBalance());
+    }
+
+    @Test
+    public void testWithDrawInAnAccountWithValueGreaterThanBalanceShouldThrowException(){
+        Agency agency = new Agency();
+        Client client = new Client();
+
+        AccountInterface account = new SavingsAccount(
+                1,
+                client,
+                agency
+        );
+        account.deposit(100d);
+        Assertions.assertThrows(OverDrawException.class, ()-> account.withDraw(150d));
+        Assertions.assertEquals(100d, account.getBalance());
     }
 }
