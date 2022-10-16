@@ -16,6 +16,6 @@ public interface AccountInterface {
     public Agency getAgency();
     public void deposit(Double amount);
     public void withDraw(double amount) throws OverDrawException;
-    public Map<AccountLimit, Integer> getLimits();
-    public void addLimit(AccountLimit limitType, Integer limit);
+    public Map<AccountLimit, Double> getLimits();
+    public void addLimit(AccountLimit limitType, Double limit);
 }

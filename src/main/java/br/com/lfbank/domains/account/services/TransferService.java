@@ -7,6 +7,7 @@ import br.com.lfbank.domains.account.exceptions.LimitByDayToTransferExceededExce
 import br.com.lfbank.domains.account.exceptions.OverDrawException;
 import br.com.lfbank.domains.account.repositories.TransferRepositoryInterface;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class TransferService {
@@ -21,12 +22,21 @@ public class TransferService {
             AccountInterface fromAccount,
             AccountInterface toAccount
     ) throws OverDrawException, LimitByDayToTransferExceededException {
-        List<Transfer> transfers = this.transferRepository.getTransfersByAccount(fromAccount);
-        if(
-                !transfers.isEmpty() &&
-                transfers.size() >= fromAccount.getLimits().get(AccountLimit.LIMIT_BY_DAY_TO_TRANSFER)
-        ){
+
+        Double limitByDayToTransfer = fromAccount.getLimits().get(AccountLimit.LIMIT_BY_DAY_TO_TRANSFER);
+        if(amount > limitByDayToTransfer){
             throw new LimitByDayToTransferExceededException();
+        }
+
+        List<Transfer> transfersOfDay = this.transferRepository.getTransfersByAccountAndDate(fromAccount, LocalDate.now());
+        if(!transfersOfDay.isEmpty()){
+            Double amountDay = transfersOfDay
+                    .stream()
+                    .mapToDouble((Transfer transfer) -> transfer.getAmount())
+                    .sum();
+            if(amountDay + amount > limitByDayToTransfer){
+                throw new LimitByDayToTransferExceededException();
+            }
         }
 
         fromAccount.withDraw(amount);

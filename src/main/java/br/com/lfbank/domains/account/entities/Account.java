@@ -11,7 +11,7 @@ import java.util.Map;
 
 public abstract  class Account implements AccountInterface{
 
-    protected Map<AccountLimit, Integer> limits;
+    protected Map<AccountLimit, Double> limits;
 
     private Integer number;
     private Client client;
@@ -55,7 +55,7 @@ public abstract  class Account implements AccountInterface{
         this.balance -= amount;
     }
 
-    public void addLimit(AccountLimit limitType, Integer limit){
+    public void addLimit(AccountLimit limitType, Double limit){
         this.limits.put(limitType, limit);
     }
 
@@ -89,7 +89,7 @@ public abstract  class Account implements AccountInterface{
     }
 
     @Override
-    public Map<AccountLimit, Integer> getLimits() {
+    public Map<AccountLimit, Double> getLimits() {
         return this.limits;
     }
 }
