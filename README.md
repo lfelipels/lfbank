@@ -1,7 +1,7 @@
 # About
 This project was created for solve a project challenge in Québec Java Digital bootcamp.
 
-The purpose is implements part of the domain bank.
+The purpose is implements part of the bank domain.
 
 ## Technologies
 Project was created with:
