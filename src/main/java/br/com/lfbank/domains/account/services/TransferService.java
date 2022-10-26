@@ -29,14 +29,12 @@ public class TransferService {
         }
 
         List<Transfer> transfersOfDay = this.transferRepository.getTransfersByAccountAndDate(fromAccount, LocalDate.now());
-        if(!transfersOfDay.isEmpty()){
-            Double amountDay = transfersOfDay
-                    .stream()
-                    .mapToDouble((Transfer transfer) -> transfer.getAmount())
-                    .sum();
-            if(amountDay + amount > limitByDayToTransfer){
-                throw new LimitByDayToTransferExceededException();
-            }
+        Double amountDay = transfersOfDay
+                .stream()
+                .mapToDouble((Transfer transfer) -> transfer.getAmount())
+                .sum();
+        if(amountDay + amount > limitByDayToTransfer){
+            throw new LimitByDayToTransferExceededException();
         }
 
         fromAccount.withDraw(amount);
